@@ -1,6 +1,7 @@
 var Buffer = require('safe-buffer').Buffer
 var pull = require('pull-stream')
 
+var q = Promise.resolve()
 var KB = 1024
 var MB = KB * 1024
 
@@ -8,6 +9,41 @@ var currentEl = document.getElementById('current')
 var resultsEl = document.getElementById('results')
 var runEl = document.getElementById('run')
 currentEl.textContent = 'Ready'
+runEl.onclick = runTests
+
+var tests = {
+	// Suspected worst-case.
+	manyPairs: test({
+		inSize: 16*KB,
+		inCount: 10000,
+		blockSize: 30*KB
+	}),
+
+	// Suspected worst-case.
+	manyTriplets: test({
+		inSize: 11*KB,
+		inCount: 14000,
+		blockSize: 30*KB
+	}),
+
+	// Large incoming buffers scenario.
+	bigBuffers: test({
+		inSize: 20*MB,
+		inCount: 1,
+		blockSize: 50*KB
+	})
+}
+var implementations = {
+	'pull-block dev': require('./pull-block-dev.js'),
+	'pull-block master': require('./pull-block-master.js'),
+	'pull-block v1.2.0': require('./pull-block-1.2.0.js')
+}
+var repeat = 6
+var wait = {
+	afterSetup: waitFor(1000),
+	afterRun: waitFor(300),
+	beforeSetup: waitFor(200)
+}
 
 function showButton(predicate) {
 	return function(passThrough) {
@@ -99,45 +135,6 @@ function teardown(context) {
 	return context
 }
 
-var tests = {
-	// Suspected worst-case.
-	manyPairs: test({
-		inSize: 16*KB,
-		inCount: 10000,
-		blockSize: 30*KB
-	}),
-
-	// Suspected worst-case.
-	manyTriplets: test({
-		inSize: 11*KB,
-		inCount: 14000,
-		blockSize: 30*KB
-	}),
-
-	// Large incoming buffers scenario.
-	bigBuffers: test({
-		inSize: 20*MB,
-		inCount: 1,
-		blockSize: 50*KB
-	})
-}
-
-var implementations = {
-	'pull-block dev': require('./pull-block-dev.js'),
-	'pull-block master': require('./pull-block-master.js'),
-	'pull-block v1.2.0': require('./pull-block-1.2.0.js')
-}
-
-var wait = {
-	afterSetup: waitFor(1000),
-	afterRun: waitFor(300),
-	beforeSetup: waitFor(200)
-}
-
-var repeat = 6
-
-var q = Promise.resolve()
-
 function runTests(){
 	q = q
 	.then(showButton(false))
@@ -182,5 +179,3 @@ function runTests(){
 	.then(setCurrent('Tests completed'))
 	.then(showButton(true))
 }
-
-runEl.onclick = runTests
