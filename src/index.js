@@ -86,11 +86,8 @@ var tests = {
 	})
 }
 var implementations = {
-	'pull-block dev #4': require('./pull-block-dev4.js'),
-	'pull-block dev #5': require('./pull-block-dev5.js'),
-	'pull-block dev #6': require('./pull-block-dev6.js'),
-	'pull-block dev': require('./pull-block-dev.js'),
-	'pull-block master': require('./pull-block-master.js')
+	'pull-block master': require('./pull-block-master.js'),
+	'pull-block dev': require('./pull-block-dev.js')
 	// 'pull-block v1.2.0': require('./pull-block-1.2.0.js')
 }
 var repeat = 8
