@@ -14,21 +14,66 @@ currentEl.textContent = 'Ready'
 runEl.onclick = runTests
 
 var tests = {
-	// Suspected worst-case.
+	perfectHalves: test({
+		inSize: 10*MB,
+		inCount: 25,
+		blockSize: 5*MB
+	}),
+	almostHalves: test({
+		inSize: 10*MB,
+		inCount: 25,
+		blockSize: 4*MB
+	}),
+	perfect10ths: test({
+		inSize: 10*MB,
+		inCount: 25,
+		blockSize: 1*MB
+	}),
+	almost10ths: test({
+		inSize: 10*MB,
+		inCount: 25,
+		blockSize: 950*KB
+	}),
+	perfect100ths: test({
+		inSize: 25*MB,
+		inCount: 12,
+		blockSize: 256*KB
+	}),
+	almost100ths: test({
+		inSize: 25*MB,
+		inCount: 12,
+		blockSize: 200*KB
+	}),
+	hugeBuffers: test({
+		inSize: 200*MB,
+		inCount: 2,
+		blockSize: 500*KB
+	}),
+	tinyBufs: test({
+		inSize: 7*KB,
+		inCount: 20000,
+		blockSize: 40*KB
+	}),
+	microBufs: test({
+		inSize: 512,
+		inCount: 50000,
+		blockSize: 40*KB
+	}),
 	manyPairs: test({
 		inSize: 16*KB,
 		inCount: 10000,
 		blockSize: 30*KB
 	}),
-
-	// Suspected worst-case.
+	perfectPairs: test({
+		inSize: 15*KB,
+		inCount: 10000,
+		blockSize: 30*KB
+	}),
 	manyTriplets: test({
 		inSize: 11*KB,
 		inCount: 14000,
 		blockSize: 30*KB
 	}),
-
-	// Large incoming buffers scenario.
 	bigBuffers: test({
 		inSize: 20*MB,
 		inCount: 1,
@@ -36,10 +81,10 @@ var tests = {
 	})
 }
 var implementations = {
-	'pull-block master': require('./pull-block-master.js'),
-	'pull-block dev #4': require('./pull-block-dev4.js'),
-	'pull-block dev #5': require('./pull-block-dev5.js'),
 	'pull-block dev': require('./pull-block-dev.js'),
+	'pull-block dev #5': require('./pull-block-dev5.js'),
+	'pull-block dev #4': require('./pull-block-dev4.js'),
+	'pull-block master': require('./pull-block-master.js')
 	// 'pull-block v1.2.0': require('./pull-block-1.2.0.js')
 }
 var repeat = 6
