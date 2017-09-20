@@ -14,6 +14,11 @@ currentEl.textContent = 'Ready'
 runEl.onclick = runTests
 
 var tests = {
+	bigRemainder: test({
+		inSize: 200*MB,
+		inCount: 1,
+		blockSize: 101*MB
+	}),
 	perfectHalves: test({
 		inSize: 10*MB,
 		inCount: 25,
@@ -82,8 +87,9 @@ var tests = {
 }
 var implementations = {
 	'pull-block dev #4': require('./pull-block-dev4.js'),
-	'pull-block dev #5-1': require('./pull-block-dev5.js'),
-	'pull-block dev #5-2': require('./pull-block-dev.js'),
+	'pull-block dev #5': require('./pull-block-dev5.js'),
+	'pull-block dev #6': require('./pull-block-dev6.js'),
+	'pull-block dev': require('./pull-block-dev.js'),
 	'pull-block master': require('./pull-block-master.js')
 	// 'pull-block v1.2.0': require('./pull-block-1.2.0.js')
 }
