@@ -8,11 +8,30 @@
     		font-size:10pt;
     		font-family:monospace;
     	}
+
+      #preview table{
+        border-spacing:0;
+        border-collapse:collapse;
+      }
+
+      #preview td, #preview th{
+        padding:5px 10px;
+        background:#def;
+      }
+
+      #results {
+        font-size:80%;
+        border:1px solid #333;
+        padding:20px;
+        display:inline-block;
+        float:right;
+      }
     </style>
   </head>
   <body>
-    <div id="results"></div>
   	<p id="current" style="font-style:italic;">Loading scripts</p>
   	<button id="run">Run tests</button>
+    <pre id="results"></pre>
+    <div id="preview"></div>
   </body>
 </html>

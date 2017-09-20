@@ -1,4 +1,5 @@
 var Buffer = require('safe-buffer').Buffer
+var markdown = require('markdown').parse
 var pull = require('pull-stream')
 
 var q = Promise.resolve()
@@ -7,6 +8,7 @@ var MB = KB * 1024
 
 var currentEl = document.getElementById('current')
 var resultsEl = document.getElementById('results')
+var previewEl = document.getElementById('preview')
 var runEl = document.getElementById('run')
 currentEl.textContent = 'Ready'
 runEl.onclick = runTests
@@ -64,22 +66,27 @@ function clearResults(passThrough) {
 	return passThrough
 }
 
+function addMDLine(a, b, c) {
+	resultsEl.textContent += a+'|'+b+'|'+c+'\n'
+	previewEl.innerHTML = markdown(resultsEl.textContent, 'Maruku')
+}
+
 function addResult(test, impl, results) {
 	return function(passThrough) {
-		var p = document.createElement('p')
 		var sum = results.reduce(function(acc, val){ return acc + val }, 0)
 		var avg = Math.round(sum / results.length)
-		p.textContent = 'Test '+test+' with '+impl+' ran an average of '+avg+'ms'
-		resultsEl.appendChild(p)
+		if(resultsEl.textContent == ''){
+			addMDLine('Test', 'Version', 'AVG')
+			addMDLine('-', '-', '-')
+		}
+		addMDLine(test, impl, `${avg}ms`)
 		return passThrough
 	}
 }
 
 function addFail(test, impl) {
 	return function(error) {
-		var p = document.createElement('p')
-		p.textContent = 'Test '+test+' with '+impl+' failed: '+error.toString()
-		resultsEl.appendChild(p)
+		addMDLine(test, impl, 'failed: '+error.toString())
 	}
 }
 
