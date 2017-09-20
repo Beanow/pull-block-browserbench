@@ -93,11 +93,11 @@ var tests = {
 	})
 }
 var implementations = {
-	'pull-block master': require('./pull-block-master.js'),
-	'pull-block dev': require('./pull-block-dev.js')
-	// 'pull-block v1.2.0': require('./pull-block-1.2.0.js')
+	'master': require('./pull-block-master.js'),
+	'dev': require('./pull-block-dev.js')
+	// 'v1.2.0': require('./pull-block-1.2.0.js')
 }
-var repeat = 8
+var repeat = 12
 var wait = {
 	afterSetup: waitFor(1000),
 	afterRun: waitFor(200),
@@ -123,27 +123,38 @@ function clearResults(passThrough) {
 	return passThrough
 }
 
-function addMDLine(a, b, c) {
-	resultsEl.textContent += a+'|'+b+'|'+c+'\n'
+function addMDLine() {
+	var line = ''
+	for(var i in arguments) line += (i > 0 ? '|' : '') + arguments[i]
+	line += '\n'
+	resultsEl.textContent += line
 	previewEl.innerHTML = markdown(resultsEl.textContent, 'Maruku')
 }
 
 function addResult(test, impl, results) {
 	return function(passThrough) {
-		var sum = results.reduce(function(acc, val){ return acc + val }, 0)
-		var avg = Math.round(sum / results.length)
+		var stat = results.reduce(function(stat, val){
+			return {
+				sum: stat.sum + val,
+				max: stat.max != null ? Math.max(stat.max, val) : val,
+				min: stat.min != null ? Math.min(stat.min, val) : val
+			}
+		}, {sum: 0, max: null, min: null})
+		var max = Math.round(stat.max)+'ms'
+		var min = Math.round(stat.min)+'ms'
+		var wavg = Math.round((stat.sum - stat.max - stat.min) / (results.length-2))+'ms'
 		if(resultsEl.textContent == ''){
-			addMDLine('Test', 'Version', 'AVG')
-			addMDLine('-', '-', '-')
+			addMDLine('Test', 'Version', 'Min', 'AVG', 'Max')
+			addMDLine('-', '-', '-:', '-:', '-:')
 		}
-		addMDLine(test, impl, `${avg}ms`)
+		addMDLine(test, impl, min, wavg, max)
 		return passThrough
 	}
 }
 
 function addFail(test, impl) {
 	return function(error) {
-		addMDLine(test, impl, 'failed: '+error.toString())
+		addMDLine(test, impl, '', '', 'failed: '+error.toString())
 	}
 }
 
@@ -180,12 +191,12 @@ function test(opts) {
 function runWith(blockImpl, results){
 	return function(context) {
 		return new Promise(function(resolve, reject){
-			var start = Date.now()
+			var start = performance.now()
 			pull(
 				pull.values(context.input),
 				blockImpl(context.blockSize, {zeroPadding: context.zeroPadding}),
 				pull.onEnd(function(){
-					results.push(Date.now() - start)
+					results.push(performance.now() - start)
 					resolve(context)
 				})
 			)
