@@ -14,10 +14,17 @@ currentEl.textContent = 'Ready'
 runEl.onclick = runTests
 
 var tests = {
+	singleRemainder: test({
+		inSize: 150*MB,
+		inCount: 1,
+		blockSize: 160*MB,
+		zeroPadding: false
+	}),
 	bigRemainder: test({
 		inSize: 200*MB,
 		inCount: 1,
-		blockSize: 101*MB
+		blockSize: 101*MB,
+		zeroPadding: false
 	}),
 	perfectHalves: test({
 		inSize: 10*MB,
@@ -152,6 +159,7 @@ function waitFor(time) {
 
 function test(opts) {
 	return function setup(){
+		console.log('Setting up', opts)
 		var input = []
 
 		for(var j = 0; j < opts.inCount; j++) {
@@ -163,6 +171,7 @@ function test(opts) {
 		return {
 			input: input,
 			blockSize: opts.blockSize,
+			zeroPadding: opts.zeroPadding,
 			results: []
 		}
 	}
@@ -174,7 +183,7 @@ function runWith(blockImpl, results){
 			var start = Date.now()
 			pull(
 				pull.values(context.input),
-				blockImpl(context.blockSize),
+				blockImpl(context.blockSize, {zeroPadding: context.zeroPadding}),
 				pull.onEnd(function(){
 					results.push(Date.now() - start)
 					resolve(context)
