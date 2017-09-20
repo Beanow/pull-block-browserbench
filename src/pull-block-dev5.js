@@ -32,28 +32,48 @@ module.exports = function block (size, opts) {
     buffered.push(data)
 
     while (bufferedBytes >= size) {
-      var copied = 0
+      var targetLength = 0
       var target = []
-      var b, end, out
+      var b
+      var out
+      var c = 0
+      var end = 0
 
-      while (copied < size) {
+      while (targetLength < size) {
         b = buffered[0]
-        end = Math.min(bufferSkip + size - copied, b.length)
+        end = bufferSkip + size - targetLength
 
-        out = b.slice(bufferSkip, end)
-        target.push(out)
-        copied += out.length
+        if (end <= b.length) {
+          // large enough, just slice it
+          out = b.slice(bufferSkip, end)
+          c = out.length
+          targetLength += c
+          target.push(out)
 
-        if (end === b.length) {
+          if (end === b.length) {
+            buffered.shift()
+            bufferSkip = 0
+          } else {
+            bufferSkip += c
+          }
+        } else {
+          // not enough, push what we have
+          targetLength += b.length - bufferSkip
+          target.push(b.slice(bufferSkip, b.length))
+
           buffered.shift()
           bufferSkip = 0
-        } else {
-          bufferSkip += out.length
         }
       }
 
-      bufferedBytes -= copied
-      this.queue(target.length > 1 ? Buffer.concat(target) : target[0])
+      bufferedBytes -= targetLength
+
+      if (target.length === 1) {
+        this.queue(target[0])
+      } else {
+        this.queue(Buffer.concat(target))
+      }
+
       emittedChunk = true
     }
   }, function flush (end) {

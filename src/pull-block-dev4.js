@@ -26,34 +26,32 @@ module.exports = function block (size, opts) {
 
   return through(function transform (data) {
     if (typeof data === 'number') {
-      data = Buffer.from([data])
+      data = Buffer([data])
     }
     bufferedBytes += data.length
     buffered.push(data)
 
     while (bufferedBytes >= size) {
       var copied = 0
-      var target = []
-      var b, end, out
+      var target = Buffer.alloc(size)
 
       while (copied < size) {
-        b = buffered[0]
-        end = Math.min(bufferSkip + size - copied, b.length)
+        var b = buffered[0]
+        var end = Math.min(bufferSkip + size - copied, b.length)
 
-        out = b.slice(bufferSkip, end)
-        target.push(out)
-        copied += out.length
+        var c = b.copy(target, copied, bufferSkip, end)
+        copied += c
+        bufferedBytes -= c
 
         if (end === b.length) {
           buffered.shift()
           bufferSkip = 0
         } else {
-          bufferSkip += out.length
+          bufferSkip += c
         }
       }
 
-      bufferedBytes -= copied
-      this.queue(target.length > 1 ? Buffer.concat(target) : target[0])
+      this.queue(target)
       emittedChunk = true
     }
   }, function flush (end) {
