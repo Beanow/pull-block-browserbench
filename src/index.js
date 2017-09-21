@@ -97,11 +97,11 @@ var implementations = {
 	'dev': require('./pull-block-dev.js')
 	// 'v1.2.0': require('./pull-block-1.2.0.js')
 }
-var repeat = 12
+var repeat = 22
 var wait = {
-	afterSetup: waitFor(1000),
-	afterRun: waitFor(200),
-	beforeSetup: waitFor(200)
+	afterSetup: waitFor(600),
+	afterRun: waitFor(100),
+	beforeSetup: waitFor(150)
 }
 
 function showButton(predicate) {
@@ -235,10 +235,10 @@ function runTests(){
 		for (var implKey in implementations){
 			var blockImpl = implementations[implKey]
 			var results = []
+			q = q.then(setCurrent('Running '+testKey+' with '+implKey))
 
 			for (var r = 1; r <= repeat; r++){
 				q = q
-				q = q.then(setCurrent('Running '+testKey+' with '+implKey+' ['+r+'/'+repeat+']'))
 				.then(runWith(blockImpl, results))
 				.then(wait.afterRun)
 			}
