@@ -93,9 +93,10 @@ var tests = {
 	})
 }
 var implementations = {
-	'master': require('./pull-block-master.js'),
-	'dev': require('./pull-block-dev.js')
-	// 'v1.2.0': require('./pull-block-1.2.0.js')
+	// 'master': require('./pull-block-master.js'),
+	// 'dev': require('./pull-block-dev.js'),
+	'v1.2.1': require('./pull-block-1.2.1.js'),
+	'v1.2.0': require('./pull-block-1.2.0.js')
 }
 var repeat = 22
 var wait = {
