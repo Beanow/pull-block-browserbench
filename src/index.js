@@ -14,6 +14,21 @@ currentEl.textContent = 'Ready'
 runEl.onclick = runTests
 
 var tests = {
+	nanoBufs2: test({
+		inSize: 2,
+		inCount: 600000,
+		blockSize: 2*KB
+	}),
+	nanoBufs4: test({
+		inSize: 4,
+		inCount: 600000,
+		blockSize: 20*KB
+	}),
+	nanoBufs16: test({
+		inSize: 16,
+		inCount: 400000,
+		blockSize: 20*KB
+	}),
 	perByteSmall: test({
 		inSize: 1,
 		inCount: 15*KB,
@@ -25,6 +40,17 @@ var tests = {
 		inCount: 200*KB,
 		blockSize: 25*KB,
 		zeroPadding: false
+	}),
+	perByteLarge: test({
+		inSize: 1,
+		inCount: 1*MB,
+		blockSize: 25*KB,
+		zeroPadding: false
+	}),
+	microPairs: test({
+		inSize: 155,
+		inCount: 100000,
+		blockSize: 300
 	}),
 	singleRemainder: test({
 		inSize: 150*MB,
@@ -106,7 +132,7 @@ var tests = {
 }
 var implementations = {
 	// 'master': require('./pull-block-master.js'),
-	// 'dev': require('./pull-block-dev.js'),
+	'dev': require('./pull-block-dev.js'),
 	'v1.2.1': require('./pull-block-1.2.1.js'),
 	'v1.2.0': require('./pull-block-1.2.0.js')
 }
