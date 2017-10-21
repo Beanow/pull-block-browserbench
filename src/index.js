@@ -14,6 +14,18 @@ currentEl.textContent = 'Ready'
 runEl.onclick = runTests
 
 var tests = {
+	perByteSmall: test({
+		inSize: 1,
+		inCount: 15*KB,
+		blockSize: 2*KB,
+		zeroPadding: false
+	}),
+	perByteMedium: test({
+		inSize: 1,
+		inCount: 200*KB,
+		blockSize: 25*KB,
+		zeroPadding: false
+	}),
 	singleRemainder: test({
 		inSize: 150*MB,
 		inCount: 1,
